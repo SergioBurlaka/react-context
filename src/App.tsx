@@ -1,35 +1,75 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, createContext, useContext } from "react";
+
+import "./App.css";
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const { theme, themeHandler } = useTheme()
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <ThemeProvider>
+
+      <div
+        style={{
+          backgroundColor: theme ? "lightgray" : "darkgrey",
+          margin: "0 auto",
+          padding: 100,
+        }}
+      >
+        <button
+          onClick={() =>
+            themeHandler((theme) => {
+              console.log(theme);
+              return !theme;
+            })
+          }
+        >
+          Theme switcher
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <Counter />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </ThemeProvider>
+
+  );
+}
+
+const ThemeContext = createContext({});
+
+function useTheme() {
+
+  return useContext(ThemeContext)
+}
+
+
+
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(true);
+
+  return (
+    <ThemeContext.Provider
+      value={{ theme, themeHandler: setTheme }}
+    >
+      {children}
+
+    </ThemeContext.Provider>
   )
 }
 
-export default App
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+
+
+  return (
+    <div>
+      <h2>Counter</h2>
+      <button onClick={() => setCount((prev) => prev + 1)}>
+        Counter {count}
+      </button>
+    </div>
+  );
+}
+
+export default App;
