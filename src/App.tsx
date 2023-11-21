@@ -2,72 +2,51 @@ import { useState, createContext, useContext } from "react";
 
 import "./App.css";
 
+import Counter from "./Counter";
 
-function App() {
+type PropsThemContext = {
+  theme: boolean;
+  setTheme: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-  const { theme, themeHandler } = useTheme()
-
-  return (
-    <ThemeProvider>
-
-      <div
-        style={{
-          backgroundColor: theme ? "lightgray" : "darkgrey",
-          margin: "0 auto",
-          padding: 100,
-        }}
-      >
-        <button
-          onClick={() =>
-            themeHandler((theme) => {
-              console.log(theme);
-              return !theme;
-            })
-          }
-        >
-          Theme switcher
-        </button>
-        <Counter />
-      </div>
-    </ThemeProvider>
-
-  );
-}
-
-const ThemeContext = createContext({});
+const ThemeContext = createContext<PropsThemContext>({} as PropsThemContext);
 
 function useTheme() {
-
-  return useContext(ThemeContext)
+  return useContext(ThemeContext);
 }
 
-
-
-function ThemeProvider({ children }) {
+const ThemeProvider = ({ children }: React.PropsWithChildren<{}>) => {
   const [theme, setTheme] = useState(true);
 
   return (
-    <ThemeContext.Provider
-      value={{ theme, themeHandler: setTheme }}
-    >
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
-
     </ThemeContext.Provider>
-  )
-}
+  );
+};
 
+function App() {
+  const { theme, setTheme } = useTheme();
 
-function Counter() {
-  const [count, setCount] = useState(0);
-
-
+  console.log("theme", theme);
+  console.log("setTheme", setTheme);
 
   return (
     <div>
-      <h2>Counter</h2>
-      <button onClick={() => setCount((prev) => prev + 1)}>
-        Counter {count}
-      </button>
+      <ThemeProvider>
+        <div
+          style={{
+            backgroundColor: theme ? "lightgray" : "darkgrey",
+            margin: "0 auto",
+            padding: 100,
+          }}
+        >
+          <button onClick={() => setTheme((theme) => !theme)}>
+            Theme switcher
+          </button>
+          <Counter />
+        </div>
+      </ThemeProvider>
     </div>
   );
 }
